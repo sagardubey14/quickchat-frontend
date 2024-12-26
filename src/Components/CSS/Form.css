@@ -1,0 +1,82 @@
+/* Ensure all elements consider padding and border in width calculation */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.center {
+  background-color: #1F1F1F;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 400px;
+  margin: auto;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+label {
+  font-size: 14px;
+  font-weight: bold;
+  display: block;
+  margin-bottom: 8px;
+  color: #E0E0E0;
+}
+
+input {
+  width: 100%;
+  padding: 10px;
+  background-color: #333333;
+  border: 1px solid #333333;
+  border-radius: 5px;
+  color: #E0E0E0;
+  font-size: 16px;
+}
+
+input:focus {
+  outline: none;
+  border-color: #6200EE;
+  background-color: #444444;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  background-color: #6200EE;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+button:hover {
+  background-color: #3700B3;
+}
+
+
+.reactLink {
+  display: inline-block;
+  margin-top: 10px;
+  text-align: center;
+  font-size: 14px;
+  color: #6200EE;
+  text-decoration: none;
+}
+.reactLinkText {
+  display: inline-block;
+  margin-top: 10px;
+  text-align: center;
+  font-size: 14px;
+  color: #6200EE;
+  text-decoration: none;
+}
+
+.reactLink:hover {
+  text-decoration: underline;
+  color: #3700B3;
+}
