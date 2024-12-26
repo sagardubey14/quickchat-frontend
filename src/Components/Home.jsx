@@ -1,17 +1,11 @@
-import { Route, Routes } from 'react-router-dom'
-import Login from './Login'
-import Register from './Register'
+import { Outlet } from 'react-router-dom'
 import './CSS/Home.CSS'
 
 function Home() {
   return (
-    <div className="home-container">
+    <div className="HomeBody">
     <h1 className="heading">QUICK-CHAT</h1>    
-    
-      <Routes>
-      <Route path="/" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      </Routes>
+    <Outlet />
     </div>
   )
 }
