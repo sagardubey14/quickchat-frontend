@@ -1,0 +1,91 @@
+.StartChats{
+    position: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    top: 50%;
+    left: 50%;
+    padding: 10px;
+    translate: -50% -50%;
+    width: 100%;
+    z-index: 10;
+}
+
+.chatUI-div{
+  display: flex;
+  height: 100vh;
+  /* style={{ display: 'flex', height: '100vh' }} */
+}
+
+.startChatBtn{
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  /* style={{ width: '100%', padding: '10px', marginBottom: '10px', cursor: 'pointer' }} */
+}
+
+.leftColoumn{
+  width: 200px;
+  background-color: #f4f4f4;
+  padding: 10px;
+  /* style={{ width: '200px', backgroundColor: '#f4f4f4', padding: '10px' }} */
+}
+.leftColoumn-hidden{
+  width: 200px;
+  background-color: #f4f4f4;
+  padding: 10px;
+  /* style={{ width: '200px', backgroundColor: '#f4f4f4', padding: '10px' }} */
+}
+.rightColoumn-hidden{
+  width: 100%;
+}
+.rightColoumn{
+  width: 100%;
+}
+.backButton{
+  display: none;
+  width: 40px;
+  margin: 0 5px 5px 0;
+  /* style={{width:'40px', margin:'0 5px 5px 0'}} */
+}
+.sendBtn{
+  width: 5%;
+  background-color: skyblue;
+  margin: 0 2px;
+}
+.inputSend{
+  display: flex;
+  /* width: 86%; */
+  margin-top: auto;
+}
+/* Styles for mobile screens */
+@media (max-width: 767px) {
+  .startChatBtn{
+    color: red;
+  }
+
+  .leftColoumn,
+  .rightColoumn {
+    width: 100%;
+    transition: transform 0.3s ease;
+  }
+
+  .leftColoumn{
+    display: block;
+    transform: translateX(0);
+  }
+  .leftColoumn-hidden{
+    display: none;
+  }
+
+  .rightColoumn-hidden {
+    display: none;
+  }
+  .backButton{
+    display: block;
+  }
+  .sendBtn{
+    width: 15%;
+  }
+}

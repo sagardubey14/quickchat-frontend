@@ -43,7 +43,7 @@ function StartChat({setShowStartChat}) {
         <span style={{ marginLeft: "10px", marginBottom:'5px'} }>Group chats?</span>
         <button
           className="close-start-chat"
-          style={{height:'2px', width:'5px', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', backgroundColor:'red', marginLeft:'auto'}}
+          style={{height:'2px', width:'5px', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', backgroundColor:'red', marginLeft:'auto', marginBottom:'10px', marginRight:'5px'}}
           onClick={() => setShowStartChat(false)}
         >
           <span className="close-icon">x</span>
