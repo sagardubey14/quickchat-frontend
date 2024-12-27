@@ -9,14 +9,14 @@ function App() {
 
   return (
     <>
-    {/* <Routes>
+    <Routes>
       <Route path="/" element={<Home />} >
         <Route index element={<Login />} />
         <Route path="/register" element={<Register />} />
       </Route>
       <Route path="/chat" element={<ChatUI />} />
-    </Routes> */}
-    <StartChat />
+    </Routes>
+    {/* <StartChat /> */}
     </>
   )
 }

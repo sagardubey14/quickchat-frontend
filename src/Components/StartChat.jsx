@@ -1,8 +1,8 @@
 import { useState } from "react";
 import "./CSS/Toggle.css";
-// import "./CSS/StartChat.css";
+import "./CSS/StartChat.css";
 
-function StartChat() {
+function StartChat({setShowStartChat}) {
   const [toggle, setToggle] = useState(false);
   const [searchRes, setSearchRes] = useState([]);
   const [groupMem, setGroupMem] = useState([]);
@@ -10,10 +10,12 @@ function StartChat() {
   const onToggle = (e) => {
     console.log(e.target.value);
     setToggle((prev) => !prev);
+    setSearchRes([]);
+    setGroupMem([]);
   };
 
   const searchName = () => {
-    setSearchRes(["abc", "dfe", "ghi"]);
+    setSearchRes(["abcasasha", "dfe", "ghi", "abc", "dfe", "ghi"]);
   };
 
   const selectName = (e) => {
@@ -32,42 +34,79 @@ function StartChat() {
   };
 
   return (
-    <div>
-      <div>
+    <div className="main-div">
+      <div className="switch-main" >
         <label className="switch">
           <input type="checkbox" checked={toggle} onChange={onToggle} />
           <span className="slider round"></span>
         </label>{" "}
-        Group chats?
+        <span style={{ marginLeft: "10px", marginBottom:'5px'} }>Group chats?</span>
+        <button
+          className="close-start-chat"
+          style={{height:'2px', width:'5px', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', backgroundColor:'red', marginLeft:'auto'}}
+          onClick={() => setShowStartChat(false)}
+        >
+          <span className="close-icon">x</span>
+        </button>
       </div>
       {toggle && (
-        <>
-          <label htmlFor="groupName">Group Name</label>
-          <input type="text" id="grpName" placeholder="Enter your group name" />
-        </>
+        <div className="group-container">
+          <label htmlFor="group-label" className="group-Name">
+            Group Name
+          </label>
+          <input
+            type="text"
+            id="grpName"
+            className="group-input"
+            placeholder="Enter your group name"
+          />
+        </div>
       )}
-      <input type="text" placeholder="Friend's Name" />
-      {searchRes.length === 0 ? null : (
-        <ul onClick={(e) => selectName(e)}>
-          {searchRes.map((name, index) => (
-            <li key={index} data-key={index}>
-              {name}
-            </li>
-          ))}
-        </ul>
-      )}
-      <button onClick={searchName}>Search</button>
-
+      <div className="search-container">
+        <input
+          type="text"
+          id="friendName"
+          className="friend-input"
+          placeholder="Friend's Name"
+        />
+        <button id="searchBtn" className="search-button" onClick={searchName}>
+          Search
+        </button>
+      </div>
+      <div className="searchResult-container">
+        {searchRes.length === 0 ? null : (
+          <ul className="search-results" onClick={(e) => selectName(e)}>
+            {searchRes.map((name, index) => (
+              <li key={index} className="search-item" data-key={index}>
+                {name}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
       {toggle && (
-        <div>
-          Selected Users for Group:
-          {groupMem.map((name, index) => (
-            <div key={index} data-key={index}>
-              {name}{" "}
-              <button onClick={() => console.log("remove user")}>X</button>
-            </div>
-          ))}
-          <button onClick={createGroup}>Create Group</button>
+        <div className="selected-group-container">
+          <p className="group-title">Selected Users for Group:</p>
+          <div className="group-members">
+            {groupMem.map((name, index) => (
+              <div key={index} className="group-member" data-key={index}>
+                <span className="member-name">{name}</span>
+                <button
+                  className="remove-user-btn"
+                  onClick={() => console.log("remove user")}
+                >
+                  <span className="remove-icon">X</span>
+                </button>
+              </div>
+            ))}
+          </div>
+          <button
+            id="createGroupBtn"
+            className="create-group-btn"
+            onClick={createGroup}
+          >
+            Create Group
+          </button>
         </div>
       )}
     </div>

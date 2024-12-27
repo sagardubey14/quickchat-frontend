@@ -1,102 +1,246 @@
-/* Center the main container */
-div {
+.main-div {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;  /* Full height of the viewport */
+    height: auto;
+    border: 1px solid #333333;
+    height: 600px;
+    width: auto;
     flex-direction: column;
-    background-color: #f4f4f9;
+    position: relative;
+    background-color: #121212; /* Primary background */
+    color: #E0E0E0; /* Default text color */
+  }
+  
+  .switch-main {
+    position: absolute;
+    top: 2%;
+    left: 2%;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    width: 98%;
+    /* border: 1px solid #333333; Border color */
+  }
+
+  /* Group Name Input */
+  .group-container {
+    margin-bottom: 15px;
     font-family: Arial, sans-serif;
-    padding: 20px;
+  }
+
+  /* Style the label for group name */
+  .group-label {
+    display: block;
+    font-size: 14px;
+    color: #E0E0E0; /* Text color */
+    margin-bottom: 5px;
   }
   
-  /* Styling the group name input field and label */
-  label {
-    font-size: 16px;
-    margin-top: 20px;
-    margin-bottom: 10px;
-  }
-  
-  input[type="text"] {
-    padding: 10px;
-    margin-bottom: 20px;
-    border: 1px solid #ccc;
+  /* Style the input field */
+  .group-input {
+    width: 100%;
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #333333; /* Dark border for input */
     border-radius: 4px;
-    width: 250px;
-    box-sizing: border-box;
+    box-sizing: border-box; /* Ensures padding doesn't affect width */
+    transition: border-color 0.3s ease;
+    background-color: #333333; /* Input background */
+    color: #E0E0E0; /* Text color */
   }
   
-  input[type="text"]:focus {
-    border-color: #2196F3;
+  /* Focus effect for the input field */
+  .group-input:focus {
+    border-color: #4CAF50; /* Green border on focus */
     outline: none;
   }
   
-  /* Styling for the search result list */
-  ul {
+  /* Search Input */
+  .search-container {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    max-width: 400px; /* Optional: Limit the width */
+    margin: 0 auto;   /* Center-align the container */
+  }
+  
+  .searchResult-container {
+    width: 300px;
+    padding: 0%;
+  }
+
+  
+  /* Style the input field */
+  .friend-input {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #333333; /* Dark border for input */
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+    background-color: #333333; /* Input background */
+    color: #E0E0E0; /* Text color */
+  }
+  
+  /* Focus effect for the input */
+  .friend-input:focus {
+    border-color: #4CAF50; /* Green border on focus */
+    outline: none;
+  }
+  
+  /* Style for the search results list */
+  .search-results {
+    width: 70%;
     list-style-type: none;
     padding: 0;
     margin: 0;
-    max-height: 200px;
-    overflow-y: auto;
-    width: 250px;
-  }
-  
-  li {
-    padding: 10px;
-    border: 1px solid #ccc;
+    max-height: 100px; /* Optional: Limit height */
+    overflow-y: auto;  /* Add scrolling */
+    border: 1px solid #333333; /* Border color */
     border-radius: 4px;
-    margin-bottom: 5px;
+    margin-top: 5px;
+    background-color: #1F1F1F; /* Secondary background */
+  }
+  
+  /* Style each list item (name) */
+  .search-item {
+    padding: 10px;
     cursor: pointer;
-    background-color: #fff;
+    background-color: #1F1F1F; /* Secondary background */
+    transition: background-color 0.3s ease;
+    color: #E0E0E0; /* Text color */
   }
   
-  li:hover {
-    background-color: #e0f7fa;
+  /* Hover effect on each search item */
+  .search-item:hover {
+    background-color: #3700B3; /* Hover background */
   }
   
-  li:active {
-    background-color: #b2ebf2;
-  }
-  
-  /* Add some margin and space for buttons */
-  button {
-    padding: 10px 20px;
-    background-color: #2196F3;
+  /* Style the search button */
+  .search-button {
+    padding: 10px 15px;
+    font-size: 16px;
+    background-color: #6200EE; /* Button color */
     color: white;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    margin-top: 10px;
+    transition: background-color 0.3s ease;
   }
   
-  button:hover {
-    background-color: #1976D2;
+  /* Hover effect on the search button */
+  .search-button:hover {
+    background-color: #3700B3; /* Hover color */
   }
   
-  button:active {
-    background-color: #1565C0;
+  /* Optional: Add focus effect to the button */
+  .search-button:focus {
+    outline: none;
   }
   
-  /* For the list of selected users in group creation */
-  div > div {
+  /* Selected Group Members */
+  .selected-group-container {
+    max-width: 400px;  /* Optional: Limit the width */
+    margin: 20px auto; /* Center-align the container */
+    padding: 20px;
+    background-color: #1F1F1F; /* Secondary background */
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Add shadow for a "popup" effect */
+  }
+  
+  /* Title for the group section */
+  .group-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #FFFFFF; /* White text for headings */
+  }
+  
+  /* Container for the list of group members */
+  .group-members {
+    display: grid; /* Use grid for layout */
+    grid-template-columns: repeat(3, 1fr); /* 3 columns for member names */
+    gap: 5px; /* Space between the grid items */
+    max-height: 70px; /* Limit height */
+    overflow-y: auto; /* Scroll if content exceeds the height */
+    margin-bottom: 15px;
+    padding-right: 5px; /* Optional: space to ensure scrollbar doesn't cover content */
+  }
+  .group-members{
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px;
-    border: 1px solid #ccc;
-    margin-bottom: 8px;
-    border-radius: 4px;
-    width: 250px;
-    background-color: #f0f0f0;
+    width: 300px;
+    flex-wrap: wrap;
   }
   
-  div > div button {
-    background-color: #f44336;
-    padding: 5px 10px;
+  /* Each group member's name container */
+  .group-member {
+    display: flex;
+    align-items: center; /* Align items horizontally */
+    gap: 10px; /* Space between name and the remove button */
+    padding: 8px;
+    border: 1px solid #333333; /* Dark border */
+    border-radius: 12px; /* Curved border for the name */
+    background-color: #333333; /* Input background */
+    color: #E0E0E0; /* Text color */
+    box-sizing: border-box;
+    overflow: hidden;
+    white-space: nowrap; /* Prevent text overflow */
+    text-overflow: ellipsis; /* Show ellipsis if name is too long */
+  }
+  
+  /* Style for each member's name */
+  .member-name {
+    font-size: 16px;
+    color: #E0E0E0; /* Text color */
+    flex: 1; /* Allow name to take available space */
+  }
+  
+  /* Button to remove the user, styled as a circle */
+  .remove-user-btn {
+    background-color: #FF4D4D; /* Remove button color */
+    color: white;
+    border: none;
+    padding: 4px 8px;
+    font-size: 14px;
+    border-radius: 50%; /* Circle button */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  /* Hover effect for the remove button */
+  .remove-user-btn:hover {
+    background-color: #E03E3E; /* Hover effect for remove button */
+  }
+  
+  /* Icon inside the remove button */
+  .remove-icon {
     font-size: 12px;
   }
   
-  div > div button:hover {
-    background-color: #d32f2f;
+  /* Button to create the group */
+  .create-group-btn {
+    padding: 10px 15px;
+    font-size: 16px;
+    background-color: #6200EE; /* Create group button color */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100%; /* Make the button the full width */
   }
+  
+  /* Hover effect on the create group button */
+  .create-group-btn:hover {
+    background-color: #3700B3; /* Hover effect */
+  }
+  
+  /* Optional: Add focus effect to the button */
+  .create-group-btn:focus {
+    outline: none;
+  }
+  
+
   

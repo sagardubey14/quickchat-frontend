@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
+import StartChat from './StartChat';
+import ChatList from './ChatList';
 
 const ChatUI = () => {
   const [selectedChat, setSelectedChat] = useState(null);
+  const [showStartChat, setShowStartChat] = useState(false);
   const chatList = [
     { id: 1, name: 'Friend 1' },
     { id: 2, name: 'Group 1' },
@@ -15,30 +18,19 @@ const ChatUI = () => {
 
   return (
     <div style={{ display: 'flex', height: '100vh' }}>
+
+      {
+        showStartChat && <StartChat setShowStartChat={setShowStartChat} />
+      }
       {/* Left Column */}
       <div style={{ width: '200px', backgroundColor: '#f4f4f4', padding: '10px' }}>
         <button 
+          onClick={()=>setShowStartChat(true)}
           style={{ width: '100%', padding: '10px', marginBottom: '10px', cursor: 'pointer' }}
         >
           + Start Chat
         </button>
-        <div style={{ padding: '10px' }}>
-          {chatList.map(chat => (
-            <div
-              key={chat.id}
-              onClick={() => handleChatSelect(chat)}
-              style={{
-                padding: '10px',
-                marginBottom: '8px',
-                cursor: 'pointer',
-                backgroundColor: '#e4e4e4',
-                borderRadius: '5px',
-              }}
-            >
-              {chat.name}
-            </div>
-          ))}
-        </div>
+        <ChatList chatList={chatList} handleChatSelect={handleChatSelect}/>
       </div>
 
       {/* Right Column */}
