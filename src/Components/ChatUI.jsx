@@ -1,13 +1,30 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import StartChat from './StartChat';
 import ChatList from './ChatList';
 import './CSS/ChatUI.css'
 import ChatDisplay from './ChatDisplay';
+import { io } from 'socket.io-client';
+import UserContext from './store/UserContext'
+import { useNavigate } from 'react-router-dom';
 
 const ChatUI = () => {
   const [selectedChat, setSelectedChat] = useState(null);
   const [showStartChat, setShowStartChat] = useState(false);
   const [showRight, setShowRight] = useState(false);
+  const {username} = useContext(UserContext);
+  const navigate = useNavigate();
+  useEffect(()=>{
+    if(username === null){
+      navigate('/')
+    }else{
+    const socketInstance = io.connect('http://localhost:3000',{
+      query:{
+        username,
+      }
+    })
+    console.log(socketInstance);
+    }
+  },[])
 
   const chatList = [
     {

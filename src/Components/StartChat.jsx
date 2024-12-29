@@ -2,7 +2,7 @@ import { useState } from "react";
 import "./CSS/Toggle.css";
 import "./CSS/StartChat.css";
 
-function StartChat({setShowStartChat}) {
+function StartChat({ setShowStartChat }) {
   const [toggle, setToggle] = useState(false);
   const [searchRes, setSearchRes] = useState([]);
   const [groupMem, setGroupMem] = useState([]);
@@ -35,15 +35,28 @@ function StartChat({setShowStartChat}) {
 
   return (
     <div className="main-div">
-      <div className="switch-main" >
+      <div className="switch-main">
         <label className="switch">
           <input type="checkbox" checked={toggle} onChange={onToggle} />
           <span className="slider round"></span>
         </label>{" "}
-        <span style={{ marginLeft: "10px", marginBottom:'5px'} }>Group chats?</span>
+        <span style={{ marginLeft: "10px", marginBottom: "5px" }}>
+          Group chats?
+        </span>
         <button
           className="close-start-chat"
-          style={{height:'2px', width:'5px', borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center', backgroundColor:'red', marginLeft:'auto', marginBottom:'10px', marginRight:'5px'}}
+          style={{
+            height: "2px",
+            width: "5px",
+            borderRadius: "50%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "red",
+            marginLeft: "auto",
+            marginBottom: "10px",
+            marginRight: "5px",
+          }}
           onClick={() => setShowStartChat(false)}
         >
           <span className="close-icon">x</span>

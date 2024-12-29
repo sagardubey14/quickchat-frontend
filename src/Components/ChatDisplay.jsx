@@ -1,20 +1,21 @@
 import React from 'react'
+import './CSS/ScrollBar.css'
 
 function ChatDisplay({selectedChat, setShowRight}) {
   return (
-    <div style={{ flex: 1, backgroundColor: '#fff', padding: '20px', flexDirection:'column' }}>
+    <div style={{ flex: 1, backgroundColor: '#fff', padding: '20px', flexDirection:'column'  }}>
     {selectedChat ? (
       <div style={{height:'95%'}}>
         <div style={{display:'flex'}}>
         <button onClick={()=>setShowRight(false)} className='backButton' >{'<-'}</button>
         <h2>{selectedChat.name}</h2>
         </div>
-        <div style={{ border: '1px solid #ddd', padding: '10px', borderRadius: '5px' }}>
+        {/* <div style={{ border: '1px solid #ddd', padding: '10px', borderRadius: '5px' }}>
           <p>This is the chat with {selectedChat.name}.</p>
-        </div>
+        </div> */}
   
         {/* Chat Messages */}
-        <div style={{ marginTop: '20px', flex:1, }}>
+        <div className='scrollable-container' >
           {selectedChat.messages.map((message) => (
             <div
               key={message.id}
@@ -72,7 +73,7 @@ function ChatDisplay({selectedChat, setShowRight}) {
         </div>
       </div>
     ) : (
-      <p>Select a chat to start messaging.</p>
+      <p style={{height:'90vh'}}>Select a chat to start messaging.</p>
     )}
      {/* Input box and Send button */}
      <div className='inputSend'>

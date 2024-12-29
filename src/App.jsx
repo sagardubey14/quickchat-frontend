@@ -3,12 +3,12 @@ import ChatUI from "./Components/ChatUI"
 import Home from "./Components/Home"
 import Login from "./Components/Login"
 import Register from "./Components/Register"
-import StartChat from "./Components/StartChat"
+import UserContextProvider from "./Components/store/UserContextProvider"
 
 function App() {
 
   return (
-    <>
+    <UserContextProvider>
     <Routes>
       <Route path="/" element={<Home />} >
         <Route index element={<Login />} />
@@ -17,7 +17,7 @@ function App() {
       <Route path="/chat" element={<ChatUI />} />
     </Routes>
     {/* <StartChat /> */}
-    </>
+    </UserContextProvider>
   )
 }
 

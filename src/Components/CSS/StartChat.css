@@ -104,7 +104,16 @@
     margin-top: 5px;
     background-color: #1F1F1F; /* Secondary background */
   }
-  
+  .search-results::-webkit-scrollbar {
+    width: 2px; /* width of the vertical scrollbar */
+  }
+
+  .search-results::-webkit-scrollbar-thumb {
+    background-color: #888; /* dark gray thumb */
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+  }
+
   /* Style each list item (name) */
   .search-item {
     padding: 10px;
@@ -169,6 +178,17 @@
     margin-bottom: 15px;
     padding-right: 5px; /* Optional: space to ensure scrollbar doesn't cover content */
   }
+
+  .group-members::-webkit-scrollbar {
+    width: 5px; /* width of the vertical scrollbar */
+  }
+
+  .group-members::-webkit-scrollbar-thumb {
+    background-color: #888; /* dark gray thumb */
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+  }
+  
   .group-members{
     display: flex;
     width: 300px;
