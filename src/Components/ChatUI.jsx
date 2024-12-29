@@ -13,6 +13,7 @@ const ChatUI = () => {
   const [showRight, setShowRight] = useState(false);
   const {username} = useContext(UserContext);
   const navigate = useNavigate();
+  
   useEffect(()=>{
     if(username === null){
       navigate('/')
