@@ -14,7 +14,8 @@ function Register() {
       const response = await axios.post('http://localhost:3000/register', {
         email,
         username,
-        pass
+        pass,
+        frnds:[],
       });
       console.log(response);
     } catch (error) {

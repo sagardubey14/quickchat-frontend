@@ -1,12 +1,13 @@
 import React from 'react'
 
 function ChatList({chatList, handleChatSelect}) {
+  const keys = Object.keys(chatList);
   return (
     <div style={{ padding: '10px' }}>
-          {chatList.map(chat => (
+          {keys.map(chatKey => (
             <div
-              key={chat.id}
-              onClick={() => handleChatSelect(chat)}
+              key={chatKey}
+              onClick={() => handleChatSelect(chatKey)}
               style={{
                 padding: '10px',
                 marginBottom: '8px',
@@ -15,7 +16,7 @@ function ChatList({chatList, handleChatSelect}) {
                 borderRadius: '5px',
               }}
             >
-              {chat.name}
+              {chatKey}
             </div>
           ))}
         </div>

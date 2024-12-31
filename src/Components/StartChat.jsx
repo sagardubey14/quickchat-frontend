@@ -1,15 +1,17 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import "./CSS/Toggle.css";
 import "./CSS/StartChat.css";
 import axios from "axios";
 import useDebounce from "../hooks/useDebounce";
+import UserContext from './store/UserContext'
 
-function StartChat({ setShowStartChat }) {
+function StartChat({ setShowStartChat, handleChatSelect }) {
   const [toggle, setToggle] = useState(false);
   const [searchRes, setSearchRes] = useState([]);
   const [groupMem, setGroupMem] = useState([]);
   const [frndName, setFrndName] = useState('');
-
+  const {chatList , setChatList} = useContext(UserContext);
+  let name = '';
   const debouncedName = useDebounce(frndName, 1000);
   async function makeGetRequest() {
     try {
@@ -51,9 +53,29 @@ function StartChat({ setShowStartChat }) {
       setGroupMem((groupMem) => [...groupMem, searchRes[e.target.dataset.key]]);
       console.log(groupMem);
     } else {
-      console.log(searchRes[e.target.dataset.key]);
+      name = searchRes[e.target.dataset.key].username;
+
+      const keys = Object.keys(chatList);
+      console.log(name, keys);
+      console.log();
+      if(!keys.includes(name)){
+        setChatList(prevChatList =>{
+          return {
+            ...prevChatList,
+            [`${name}`]:{
+              id:Date.now(),
+              name:name,
+              messages:[],
+            }
+          }
+        })
+      }
+      handleChatSelect(name)      
+      setShowStartChat(false)
+      console.log(chatList);
     }
   };
+
 
   const createGroup = () => {
     console.log("Group creating API");
