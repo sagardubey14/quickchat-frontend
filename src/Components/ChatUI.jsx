@@ -11,8 +11,27 @@ const ChatUI = () => {
   const [selectedChat, setSelectedChat] = useState(null);
   const [showStartChat, setShowStartChat] = useState(false);
   const [showRight, setShowRight] = useState(false);
-  const {username, setUsername, chatList , socketInstance, setSocketInstance} = useContext(UserContext);
+  const {username, chatList, setChatList , socketInstance, setSocketInstance} = useContext(UserContext);
   const navigate = useNavigate();
+  const [pendingMsg, setPendingMsg] = useState(false);
+
+  const handlePendingMsg = (pendingMsg)=>{
+    let updatedChatList = chatList;
+    pendingMsg.map(msg=>{
+      if(!updatedChatList[msg.sender]){
+        updatedChatList[msg.sender]={
+          id:Date.now(),
+          name:msg.sender,
+          messages:msg,
+        }
+      }else{
+        updatedChatList[msg.sender].messages.push(msg)
+      }
+      return;
+    })
+    console.log(updatedChatList);
+    
+  }
   
   useEffect(()=>{
     if(username === null){
@@ -30,6 +49,20 @@ const ChatUI = () => {
     }
   },[username])
 
+  useEffect(()=>{
+    console.log(chatList);
+    if(!socketInstance) return
+    if(!pendingMsg){
+      socketInstance.on(`pending-msg-${username}`,(msg)=>{
+        console.log(msg,'pending msg array');
+        handlePendingMsg(msg)
+        setPendingMsg(true);
+      })
+    }
+    return () => {
+      socketInstance.off(`pending-msg-${username}`);
+    };
+  },[socketInstance])
 
   const handleChatSelect = (chat) => {
     setSelectedChat(chat);

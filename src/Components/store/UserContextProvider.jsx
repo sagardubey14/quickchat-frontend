@@ -3,7 +3,7 @@ import UserContext from './userContext'
 import chat from './basicData';
 
 function UserContextProvider({children}) {
-    const [username, setUsername] = useState('guest_123');
+    const [username, setUsername] = useState('admin_paul_walker');
     const [chatList, setChatList] = useState(chat);
     const [socketInstance, setSocketInstance] = useState(null)
   return (

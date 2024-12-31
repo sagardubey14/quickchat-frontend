@@ -7,14 +7,21 @@ function ChatDisplay({selectedChat, setShowRight}) {
   const {username, chatList , setChatList, socketInstance, setSocketInstance} = useContext(UserContext);
   const [text, setText] = useState('');
 
+
   useEffect(()=>{
     if(!socketInstance) return
     if(!selectedChat) return
-    socketInstance.on(`msg-for-${username}`,(msg)=>{
-      console.log(msg," to reciever");
+
+    const messageListener = (msg) => {
+      console.log(msg, "to receiver");
       handleRecieveMsg(msg);
-      // socketInstance.emit(`msg-received-by-${username}`, 'msg Recieved');
-    })
+      socketInstance.emit(`msg-received-by-${username}`, 'msg Received');
+    };
+  
+    socketInstance.on(`msg-for-${username}`, messageListener)
+    return () => {
+      socketInstance.off(`msg-for-${username}`, messageListener);
+    };
   },[socketInstance, selectedChat])
 
   function handleRecieveMsg(msg){
