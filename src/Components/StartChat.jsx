@@ -10,15 +10,16 @@ function StartChat({ setShowStartChat, handleChatSelect }) {
   const [searchRes, setSearchRes] = useState([]);
   const [groupMem, setGroupMem] = useState([]);
   const [frndName, setFrndName] = useState('');
-  const {chatList , setChatList} = useContext(UserContext);
-  let name = '';
+  const {username, chatList , setChatList, socketInstance} = useContext(UserContext);
+  const [grpName, setGrpName] = useState('');
+
   const debouncedName = useDebounce(frndName, 1000);
   async function makeGetRequest() {
     try {
       const response = await axios.get(`http://localhost:3000/users?username=${frndName}`);
-      console.log(response.data);
+      // 
       if(response.data.msg){
-
+        console.log(response.data.msg);
       }else{
         setSearchRes(response.data.foundUsers);
       }
@@ -29,7 +30,6 @@ function StartChat({ setShowStartChat, handleChatSelect }) {
   useEffect(()=>{
     if(!debouncedName) return;
     makeGetRequest();
-    console.log(debouncedName);
 
   },[debouncedName])
   
@@ -41,23 +41,20 @@ function StartChat({ setShowStartChat, handleChatSelect }) {
   }
 
   const onToggle = (e) => {
-    console.log(e.target.value);
     setToggle((prev) => !prev);
     setSearchRes([]);
-    setGroupMem([]);
+    setGroupMem([username]);
   };
 
   const selectName = (e) => {
-    console.log(e.target.dataset.key + "-" + e.target.innerText);
     if (toggle) {
-      setGroupMem((groupMem) => [...groupMem, searchRes[e.target.dataset.key]]);
-      console.log(groupMem);
+      if(!groupMem.includes(searchRes[e.target.dataset.key]))
+        setGroupMem((groupMem) => [...groupMem, searchRes[e.target.dataset.key]]);
+      // console.log(groupMem);
     } else {
-      name = searchRes[e.target.dataset.key].username;
+      let name = searchRes[e.target.dataset.key];
 
       const keys = Object.keys(chatList);
-      console.log(name, keys);
-      console.log();
       if(!keys.includes(name)){
         setChatList(prevChatList =>{
           return {
@@ -78,8 +75,28 @@ function StartChat({ setShowStartChat, handleChatSelect }) {
 
 
   const createGroup = () => {
+    const grpDetail = {
+      id:Date.now(),
+      name: grpName,
+      members:groupMem,
+      admin:username,
+    }
     console.log("Group creating API");
-    console.log(groupMem);
+    console.log(grpDetail);
+    socketInstance.emit('grp-formation',grpDetail);
+    socketInstance.emit('join-room',grpDetail.id);
+    setChatList(prevChatList =>{
+      return {
+        ...prevChatList,
+        [`${grpDetail.name}`]:{
+          id:grpDetail.id,
+          name:grpDetail.name,
+          messages:[],
+        }
+      }
+    })
+    handleChatSelect(grpDetail.name);   
+    setShowStartChat(false);
   };
 
   return (
@@ -119,6 +136,8 @@ function StartChat({ setShowStartChat, handleChatSelect }) {
           <input
             type="text"
             id="grpName"
+            value={grpName}
+            onChange={(e)=>setGrpName(e.target.value)}
             className="group-input"
             placeholder="Enter your group name"
           />
@@ -142,7 +161,7 @@ function StartChat({ setShowStartChat, handleChatSelect }) {
           <ul className="search-results" onClick={(e) => selectName(e)}>
             {searchRes.map((user, index) => (
               <li key={index} className="search-item" data-key={index}>
-                {user.username}
+                {user}
               </li>
             ))}
           </ul>
@@ -152,12 +171,13 @@ function StartChat({ setShowStartChat, handleChatSelect }) {
         <div className="selected-group-container">
           <p className="group-title">Selected Users for Group:</p>
           <div className="group-members">
-            {groupMem.map((user, index) => (
+            {(groupMem.length >0) &&
+            groupMem.map((user, index) => (
               <div key={index} className="group-member" data-key={index}>
-                <span className="member-name">{user.username}</span>
+                <span className="member-name">{user}</span>
                 <button
                   className="remove-user-btn"
-                  onClick={() => console.log("remove user")}
+                  onClick={() => console.log("remove user",user)}
                 >
                   <span className="remove-icon">X</span>
                 </button>

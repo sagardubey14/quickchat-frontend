@@ -2,40 +2,20 @@ import React, { useContext, useEffect, useState } from 'react'
 import './CSS/ScrollBar.css'
 import UserContext from './store/UserContext';
 
-function ChatDisplay({selectedChat, setShowRight}) {
+function ChatDisplay({selectedChat, setShowRight, handleRecieveMsg}) {
   
   const {username, chatList , setChatList, socketInstance, setSocketInstance} = useContext(UserContext);
   const [text, setText] = useState('');
 
 
-  useEffect(()=>{
-    if(!socketInstance) return
-    if(!selectedChat) return
-
-    const messageListener = (msg) => {
-      console.log(msg, "to receiver");
-      handleRecieveMsg(msg);
-      socketInstance.emit(`msg-received-by-${username}`, 'msg Received');
-    };
-  
-    socketInstance.on(`msg-for-${username}`, messageListener)
-    return () => {
-      socketInstance.off(`msg-for-${username}`, messageListener);
-    };
-  },[socketInstance, selectedChat])
-
-  function handleRecieveMsg(msg){
-    setChatList(prevChatList=>{
-      return {
-        ...prevChatList,
-        [selectedChat]:{
-          ...prevChatList[selectedChat],
-          messages: [...prevChatList[selectedChat].messages, msg]
-        }
-      }
-    })
+  function getFormattedTime() {
+    const now = new Date(Date.now());
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    
+    const formattedTime = `${hours}:${minutes.toString().padStart(2, '0')}`;
+    return formattedTime;
   }
-
   const handleSend = ()=>{
     if(!text.trim()) return;
     let msg = {
@@ -43,12 +23,11 @@ function ChatDisplay({selectedChat, setShowRight}) {
       "text": text,
       "sender": username,
       "receiver": selectedChat,
-      "timeStamp": "7:00",
+      "timeStamp": getFormattedTime(),
       "status": "sent"
     }
     console.log(msg);
-    // setMsgs(msg)
-    handleRecieveMsg(msg);
+    handleRecieveMsg(msg, selectedChat);
     setText("");
     console.log(socketInstance);
     socketInstance.emit(`chat-message`,msg);
@@ -56,7 +35,6 @@ function ChatDisplay({selectedChat, setShowRight}) {
 
   return (
     <div style={{ flex: 1, backgroundColor: '#fff', padding: '20px', flexDirection:'column'  }}>
-      {/* {console.log(chatList)} */}
     {
       selectedChat ? (
       <div style={{height:'95%'}}>
