@@ -3,20 +3,54 @@ import './CSS/ScrollBar.css'
 import UserContext from './store/UserContext';
 
 function ChatDisplay({selectedChat, setShowRight, handleRecieveMsg}) {
+  const [status , setStatus] = useState(null)
   
   const {username, chatList , setChatList, socketInstance, setSocketInstance} = useContext(UserContext);
   const [text, setText] = useState('');
 
+  useEffect(()=>{
+    console.log(socketInstance, selectedChat, chatList[selectedChat] );
+    
+    if(!socketInstance) return;
+    if(!selectedChat) return;
+    if(chatList[selectedChat].isGroup) return;
+    console.log('checkkk');
+    socketInstance.emit('user-status',selectedChat, (st) => {
+      console.log('User status:', st.status);
+      if(st.status === 'online'){
+        setStatus('Online');
+      }else{
+        let time = getFormattedTime(st.time);
+        setStatus(`last seen at ${time}`);
+      }
+    });
+    // let intervalId = setInterval(() => {
+    //   console.log('executiong callback for status');
+      
+    // }, 10000);
 
-  function getFormattedTime() {
-    const now = new Date(Date.now());
+    return (()=>{
+      // clearInterval(intervalId);
+      console.log('unmount');
+    })
+  },[socketInstance, selectedChat])
+
+  function getFormattedTime(time = null) {
+    const now = time?new Date(time):new Date(Date.now());
+    console.log(now);
+    
     const hours = now.getHours();
     const minutes = now.getMinutes();
-    
     const formattedTime = `${hours}:${minutes.toString().padStart(2, '0')}`;
     return formattedTime;
   }
+
   const handleSend = ()=>{
+    if(text === 'data de'){
+      console.log(chatList);
+      return;
+    }
+
     if(!text.trim()) return;
     let msg = {
       "id": Date.now(),
@@ -30,7 +64,7 @@ function ChatDisplay({selectedChat, setShowRight, handleRecieveMsg}) {
     handleRecieveMsg(msg, selectedChat);
     setText("");
     console.log(socketInstance);
-    socketInstance.emit(`chat-message`,msg);
+    socketInstance.emit(`chat-message`,{msg, isGroup: chatList[selectedChat].isGroup});
   }
 
   return (
@@ -42,7 +76,7 @@ function ChatDisplay({selectedChat, setShowRight, handleRecieveMsg}) {
         <button onClick={()=>setShowRight(false)} className='backButton' >{'<-'}</button>
         <h2>{chatList[selectedChat].name}</h2>
         </div>
-  
+        {!chatList[selectedChat].isGroup && <h3>{status}</h3>}
         {/* Chat Messages */}
         <div className='scrollable-container' >
           {
@@ -55,22 +89,36 @@ function ChatDisplay({selectedChat, setShowRight, handleRecieveMsg}) {
                 flexDirection: message.sender === username ? 'row-reverse' : 'row',
                 marginBottom: '10px',
                 alignItems: 'flex-start',
-                 overflowY: 'auto'
+                overflowY: 'auto'
               }}
             >
               {/* Message Bubble */}
               <div
                 style={{
                   backgroundColor: message.sender === username ? '#d1f7c4' : '#f1f1f1',
-                  padding: '10px',
+                  paddingTop: '8px',
+                  paddingBottom:'8px',
                   paddingRight: message.sender === username ? '0' : '10px',
                   borderRadius: '10px',
                   maxWidth: '70%',
                   position: 'relative',
                   wordWrap: 'break-word',
+                  paddingTop: chatList[selectedChat].isGroup? '0': '10px'
                 }}
               >
-                <p style={{ margin: 0, marginBottom:'2px' }}>
+                {(chatList[selectedChat].isGroup && message.sender !== username)
+                 && 
+                 <p style={{
+                  margin: 0,
+                  padding:'3px',
+                  fontWeight: 'bold',
+                  fontSize: '12px',
+                  borderTopLeftRadius:'10px',
+                  borderTopRightRadius: '10px',
+                  color: '#333',
+                  backgroundColor:'#d1d1d1',
+                }}>{message.sender}</p>}
+                <p style={{ margin: 0, padding:'2px' ,marginLeft:'6px', marginBottom:'2px' }}>
                   {message.text}
                   {message.sender === username ?
                     (() => {

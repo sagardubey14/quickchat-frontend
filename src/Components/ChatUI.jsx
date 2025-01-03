@@ -18,15 +18,19 @@ const ChatUI = () => {
 
   const handlePendingMsg = (pendingMsg)=>{
     let updatedChatList = chatList;
-    pendingMsg.map(msg=>{
-      if(!updatedChatList[msg.sender]){
-        updatedChatList[msg.sender]={
+    pendingMsg.map(finalMsg=>{
+      let {msg, receiver} = finalMsg;
+      if(!receiver) receiver = msg.sender;
+      console.log(finalMsg, "to receiver");
+      if(!updatedChatList[receiver]){
+        updatedChatList[receiver]={
           id:Date.now(),
           name:msg.sender,
-          messages:[msg],
+          messages:msg==null?[]:[msg],
+          isGroup: msg==null?true:false,
         }
       }else{
-        updatedChatList[msg.sender].messages.push(msg)
+        updatedChatList[receiver].messages.push(msg)
       }
       console.log(updatedChatList,'single');
       return;
@@ -40,13 +44,12 @@ const ChatUI = () => {
       navigate('/')
     }else{
       if(!socketInstance){
-        const socketInst = io.connect('http://localhost:3000',{
+        const socketInst = io.connect(`${import.meta.env.VITE_API_URL}`,{
           query:{
             username,
           }
         })
         setSocketInstance(socketInst)
-        console.log(socketInstance); 
       }
     }
 
@@ -59,7 +62,6 @@ const ChatUI = () => {
   },[username])
 
   useEffect(()=>{
-    console.log(chatList);
     if(!socketInstance) return
     if(!pendingMsg){
       socketInstance.on(`pending-msg-${username}`,(msg)=>{
@@ -77,33 +79,31 @@ const ChatUI = () => {
     setSelectedChat(chat);
     setShowRight(true)
   };
+
   
   useEffect(()=>{
     if(!socketInstance) return
-
-    const messageListener = (msg) => {
-      console.log(msg, "to receiver");
-      handleRecieveMsg(msg);
+    const messageListener = (finalMsg) => {
+      const {msg, receiver} = finalMsg;
+      console.log(finalMsg, "to receiver");
+      handleRecieveMsg(msg, receiver);
       // socketInstance.emit(`msg-received-by-${username}`, 'msg Received');
     };
-
     const grpListener =(msg)=>{
       if(msg.members.includes(username)){
         console.log(msg ," grp details recieved by client!!");
         handleRecieveMsg(null,msg.name, msg.id);
-        socketInstance.emit('join-room',msg.id);
       }
     }
 
     socketInstance.on('group-formation', grpListener)
     socketInstance.on(`msg-for-${username}`, messageListener);
-    
     return () => {
       socketInstance.off('group-formation', grpListener)
       socketInstance.off(`msg-for-${username}`, messageListener);
     };
-
   },[socketInstance])
+
 
   function handleRecieveMsg(msg, reciever = null, groupId = null){
     console.log(msg,reciever, groupId);
@@ -119,8 +119,10 @@ const ChatUI = () => {
               id: groupId ? groupId : Date.now(),
               name: reciever,
               messages: msg==null?[]:[msg],
+              isGroup: msg==null?true:false,
           };
       } else {
+        console.log('second');
         if(!msg) return updatedChatList;
           updatedChatList[reciever] = {
               ...updatedChatList[reciever],
@@ -131,6 +133,19 @@ const ChatUI = () => {
       return updatedChatList;
     });
   }
+
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      localStorage.setItem('username', username);
+      localStorage.setItem('myChat', JSON.stringify(chatList));
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [username, chatList]);
 
   return (
     <div className='chatUI-div'>

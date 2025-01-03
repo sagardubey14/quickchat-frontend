@@ -8,6 +8,7 @@ import UserContext from './store/UserContext'
 function StartChat({ setShowStartChat, handleChatSelect }) {
   const [toggle, setToggle] = useState(false);
   const [searchRes, setSearchRes] = useState([]);
+  const [noUsers, setNoUsers] = useState(false);
   const [groupMem, setGroupMem] = useState([]);
   const [frndName, setFrndName] = useState('');
   const {username, chatList , setChatList, socketInstance} = useContext(UserContext);
@@ -16,11 +17,13 @@ function StartChat({ setShowStartChat, handleChatSelect }) {
   const debouncedName = useDebounce(frndName, 1000);
   async function makeGetRequest() {
     try {
-      const response = await axios.get(`http://localhost:3000/users?username=${frndName}`);
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/users?username=${frndName}`);
       // 
       if(response.data.msg){
         console.log(response.data.msg);
+        setNoUsers(true);
       }else{
+        setNoUsers(false);
         setSearchRes(response.data.foundUsers);
       }
     } catch (error) {
@@ -63,6 +66,7 @@ function StartChat({ setShowStartChat, handleChatSelect }) {
               id:Date.now(),
               name:name,
               messages:[],
+              isGroup:false,
             }
           }
         })
@@ -84,7 +88,6 @@ function StartChat({ setShowStartChat, handleChatSelect }) {
     console.log("Group creating API");
     console.log(grpDetail);
     socketInstance.emit('grp-formation',grpDetail);
-    socketInstance.emit('join-room',grpDetail.id);
     setChatList(prevChatList =>{
       return {
         ...prevChatList,
@@ -92,6 +95,7 @@ function StartChat({ setShowStartChat, handleChatSelect }) {
           id:grpDetail.id,
           name:grpDetail.name,
           messages:[],
+          isGroup:true,
         }
       }
     })
@@ -148,7 +152,7 @@ function StartChat({ setShowStartChat, handleChatSelect }) {
           type="text"
           id="friendName"
           value={frndName}
-          onChange={(e)=>setFrndName(e.target.value)}
+          onChange={(e)=>{setFrndName(e.target.value)}}
           className="friend-input"
           placeholder="Friend's Name"
         />
@@ -156,7 +160,7 @@ function StartChat({ setShowStartChat, handleChatSelect }) {
           Search
         </button>
       </div>
-      <div className="searchResult-container">
+      {noUsers?<div className="searchResult-container">No users found as {frndName}</div>:<div className="searchResult-container">
         {searchRes.length === 0 ? null : (
           <ul className="search-results" onClick={(e) => selectName(e)}>
             {searchRes.map((user, index) => (
@@ -166,7 +170,7 @@ function StartChat({ setShowStartChat, handleChatSelect }) {
             ))}
           </ul>
         )}
-      </div>
+      </div>}
       {toggle && (
         <div className="selected-group-container">
           <p className="group-title">Selected Users for Group:</p>

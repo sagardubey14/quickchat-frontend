@@ -41,4 +41,18 @@
 .scrollable-container {
     scroll-behavior: smooth;
   }
-  
+
+  .sender-name {
+    margin: 0;
+    font-weight: bold;
+    font-size: 12px;
+    color: #333; /* You can adjust this color to match your theme */
+    position: absolute;
+    top: -15px; /* Position the sender's name above the bubble */
+    left: 10px; /* Adjust left positioning as needed */
+    width: calc(100% - 20px); /* Ensure the username fits within the message bubble width */
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Optional: Truncate long names with "..." */
+  }

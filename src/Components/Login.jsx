@@ -1,23 +1,28 @@
 import { Link, useNavigate } from "react-router-dom";
 import "./CSS/Form.css";
 import axios from "axios";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import UserContext from './store/UserContext'
 
 
 function Login() {
-  const {setUsername} = useContext(UserContext);
+  const {username, setUsername} = useContext(UserContext);
   const navigate = useNavigate();
   const [email, setEmail] = useState('')
   const [pass, setPass] = useState('')
 
+  useEffect(()=>{
+    if(username){
+      navigate('/chat');
+    }
+  },[]);
+
   async function makePostRequest() {
     try {
-      const response = await axios.post('http://localhost:3000/login', {
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/login`, {
         email,
         pass
       });
-      console.log(response);
       setUsername(response.data.username);
       navigate('/chat');
 
