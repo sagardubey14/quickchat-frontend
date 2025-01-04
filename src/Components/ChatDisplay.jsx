@@ -1,8 +1,11 @@
 import React, { useContext, useEffect, useState } from 'react'
 import './CSS/ScrollBar.css'
 import UserContext from './store/UserContext';
+import read from '../assets/read.png'
+import delievered from '../assets/delievered.png'
+import sent from '../assets/sent.png'
 
-function ChatDisplay({selectedChat, setShowRight, handleRecieveMsg}) {
+function ChatDisplay({selectedChat, setShowRight, handleRecieveMsg, handleStatusUpdate}) {
   const [status , setStatus] = useState(null)
   
   const {username, chatList , setChatList, socketInstance, setSocketInstance} = useContext(UserContext);
@@ -24,10 +27,6 @@ function ChatDisplay({selectedChat, setShowRight, handleRecieveMsg}) {
         setStatus(`last seen at ${time}`);
       }
     });
-    // let intervalId = setInterval(() => {
-    //   console.log('executiong callback for status');
-      
-    // }, 10000);
 
     return (()=>{
       // clearInterval(intervalId);
@@ -43,6 +42,18 @@ function ChatDisplay({selectedChat, setShowRight, handleRecieveMsg}) {
     const minutes = now.getMinutes();
     const formattedTime = `${hours}:${minutes.toString().padStart(2, '0')}`;
     return formattedTime;
+  }
+  function sendReadStatus(msgId, status){
+    console.log(msgId,' - ', status);
+    if(status === 'sent'){
+        handleStatusUpdate({msgId, 'receiver':selectedChat, 'status':'read'})
+    }
+    if(!chatList[selectedChat].isGroup){
+      if(status !== 'read'){
+        console.log('read nhi he');
+        socketInstance.emit('msg-status',{msgId, sender:selectedChat, 'receiver':username ,status:'read'});
+      }
+    }
   }
 
   const handleSend = ()=>{
@@ -124,15 +135,15 @@ function ChatDisplay({selectedChat, setShowRight, handleRecieveMsg}) {
                     (() => {
                       switch (message.status) {
                         case 'delivered':
-                          return <span style={{ marginRight: '5px', marginLeft:'5px', color: 'gray' }}>✓</span>;
+                          return <img src={delievered} style={{ marginRight: '5px', height:'20px', marginLeft:'5px', color: 'blue' }}/>;
                         case 'read':
-                          return <span style={{ marginRight: '5px', marginLeft:'5px', color: 'blue' }}>✓</span>;
+                          return <img src={read} style={{ marginRight: '5px', height:'20px', marginLeft:'5px', color: 'blue' }} />;
                         case 'sent':
-                          return <span style={{ marginRight: '5px', marginLeft:'5px', color: 'gray' }}>↗</span>;
+                          return <img src={sent} style={{ marginRight: '5px', height:'20px', marginLeft:'5px', color: 'gray' }} />;
                         default:
                           return null;
                       }
-                    })(): null
+                    })():sendReadStatus(message.id,message.status)
                   }
                 </p>
                 <div

@@ -20,8 +20,11 @@ const ChatUI = () => {
     let updatedChatList = chatList;
     pendingMsg.map(finalMsg=>{
       let {msg, receiver} = finalMsg;
-      if(!receiver) receiver = msg.sender;
-      console.log(finalMsg, "to receiver");
+      if(!receiver){ 
+        receiver = msg.sender
+        socketInstance.emit('msg-status',{msgId:msg.id, sender:msg.sender, 'receiver':msg.receiver ,status:'delivered'});
+      };
+      console.log(finalMsg, "to receiver by pending");
       if(!updatedChatList[receiver]){
         updatedChatList[receiver]={
           id:Date.now(),
@@ -30,13 +33,13 @@ const ChatUI = () => {
           isGroup: msg==null?true:false,
         }
       }else{
-        updatedChatList[receiver].messages.push(msg)
+        updatedChatList[receiver]={
+          ...updatedChatList[receiver],
+          messages:[...updatedChatList[receiver].messages,msg],
+        }
       }
-      console.log(updatedChatList,'single');
       return;
-
     })
-    console.log(updatedChatList,'final');
   }
   
   useEffect(()=>{
@@ -98,6 +101,12 @@ const ChatUI = () => {
 
     socketInstance.on('group-formation', grpListener)
     socketInstance.on(`msg-for-${username}`, messageListener);
+    console.log(`msg-status-${username}`);
+    
+    socketInstance.on(`msg-status-${username}`, (msg)=>{
+      console.log(msg);
+      handleStatusUpdate(msg);
+    })
     return () => {
       socketInstance.off('group-formation', grpListener)
       socketInstance.off(`msg-for-${username}`, messageListener);
@@ -105,16 +114,35 @@ const ChatUI = () => {
   },[socketInstance])
 
 
+  function handleStatusUpdate(msgDetail){
+    const {msgId, receiver, status} = msgDetail;
+    console.log(chatList);
+    setChatList(prevChatList=>{
+      let updatedChatList = {...prevChatList};
+      let recieverChat = updatedChatList[receiver];
+      updatedChatList[receiver] = {
+        ...recieverChat,
+        messages: recieverChat.messages.map(msg=>
+          msg.id === msgId ? {...msg, status}: msg
+        )
+      }
+
+      return updatedChatList;
+    })
+  }
+
   function handleRecieveMsg(msg, reciever = null, groupId = null){
     console.log(msg,reciever, groupId);
     
-    if(!reciever) reciever = msg.sender;
+    if(!reciever){
+      socketInstance.emit('msg-status',{msgId:msg.id, sender:msg.sender, 'receiver':msg.receiver ,status:'delivered'});
+      reciever = msg.sender;
+    } 
     setChatList(prevChatList => {
       const updatedChatList = { ...prevChatList };
 
       if (!updatedChatList[reciever]) {
         console.log('first');
-        
           updatedChatList[reciever] = {
               id: groupId ? groupId : Date.now(),
               name: reciever,
@@ -170,7 +198,12 @@ const ChatUI = () => {
 
       {/* Right Column */}
       <div className={`rightColoumn${showRight?'':'-hidden' }`}>
-        <ChatDisplay selectedChat={selectedChat} setSelectedChat={setSelectedChat} handleRecieveMsg={handleRecieveMsg} setShowRight={setShowRight}/>
+        <ChatDisplay 
+          selectedChat={selectedChat} 
+          setSelectedChat={setSelectedChat} 
+          handleRecieveMsg={handleRecieveMsg}
+          handleStatusUpdate={handleStatusUpdate} 
+          setShowRight={setShowRight}/>
       </div>
     </div>
   );
