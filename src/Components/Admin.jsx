@@ -56,7 +56,7 @@ function Admin() {
 
     
     return (
-        true ? 
+        isAdmin ? 
         (<div
             style={{
               display: 'flex',
@@ -117,7 +117,7 @@ function Admin() {
               </button>
             </div>
           </div>):
-        <div style={{
+          <div style={{
             backgroundColor: '#f4f4f9',
             borderRadius: '10px',
             padding: '20px',
@@ -192,9 +192,7 @@ function Admin() {
               {loading ? 'Loading...': 'Submit'}
             </button>
           
-          </div>
-          
-          
+            </div>
   )
 }
 

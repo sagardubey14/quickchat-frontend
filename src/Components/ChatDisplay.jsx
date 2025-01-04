@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import './CSS/ScrollBar.css'
 import UserContext from './store/UserContext';
 import read from '../assets/read.png'
@@ -6,7 +6,7 @@ import delievered from '../assets/delievered.png'
 import sent from '../assets/sent.png'
 import typingImage from '../assets/typing.gif'
 
-function ChatDisplay({selectedChat, setSelectedChat, setShowRight, handleRecieveMsg, handleStatusUpdate}) {
+function ChatDisplay({selectedChat, setSelectedChat, setShowRight, handleRecieveMsg}) {
   const [status , setStatus] = useState(null);
   const [typing, setTyping] = useState(false);
   
@@ -25,6 +25,14 @@ function ChatDisplay({selectedChat, setSelectedChat, setShowRight, handleRecieve
         setTyping(false)
       }, 1000);
     }
+    socketInstance.emit('user-status',selectedChat, (st) => {
+      if(st.status === 'online'){
+        setStatus('Online');
+      }else{
+        let time = getFormattedTime(st.time);
+        setStatus(`last seen at ${time}`);
+      }
+    });
     socketInstance.on(`user-typing-at-${username}`,handleTypingStatus)
     const userStatusId = setInterval(() => {
       socketInstance.emit('user-status',selectedChat, (st) => {
@@ -35,14 +43,32 @@ function ChatDisplay({selectedChat, setSelectedChat, setShowRight, handleRecieve
           setStatus(`last seen at ${time}`);
         }
       });
-    }, 30000);
+    }, 10000);
 
     return (()=>{
       clearInterval(userStatusId);
       socketInstance.off(`user-typing-at-${username}`,handleTypingStatus)
       console.log('unmount');
     })
-  },[socketInstance, selectedChat])
+  },[socketInstance, selectedChat, username])
+
+  const handleMessageStatusUpdate = useCallback(
+    (msgDetail) => {
+      const { msgId, receiver, status } = msgDetail;
+      setChatList((prevChatList) => {
+        let updatedChatList = { ...prevChatList };
+        let recieverChat = updatedChatList[receiver];
+        updatedChatList[receiver] = {
+          ...recieverChat,
+          messages: recieverChat.messages.map((msg) =>
+            msg.id === msgId ? { ...msg, status } : msg
+          ),
+        };
+        return updatedChatList;
+      });
+    },
+    [setChatList]
+  );
 
   function getFormattedTime(time = null) {
     const now = time?new Date(time):new Date(Date.now());
@@ -55,9 +81,11 @@ function ChatDisplay({selectedChat, setSelectedChat, setShowRight, handleRecieve
   }
 
   function sendReadStatus(msgId, status){
+    if(status === 'sent'){
+      handleMessageStatusUpdate({msgId, 'receiver':selectedChat, 'status':'read'})
+    }
     if(!chatList[selectedChat].isGroup){
       if(status !== 'read'){
-        handleStatusUpdate({msgId, 'receiver':selectedChat, 'status':'read'})
         socketInstance.emit('msg-status',{msgId, sender:selectedChat, 'receiver':username ,status:'read'});
       }
     }
@@ -112,7 +140,7 @@ function ChatDisplay({selectedChat, setSelectedChat, setShowRight, handleRecieve
         {/* Chat Messages */}
         <div className='scrollable-container' >
           {
-            chatList[selectedChat].messages.length === 0 ? <h1>No message Start the chat</h1> :
+            chatList[selectedChat].messages.length === 0 ? <h2>No message Start the chat</h2> :
             chatList[selectedChat].messages.map((message) => (
             <div
               key={message.id}
@@ -130,7 +158,7 @@ function ChatDisplay({selectedChat, setSelectedChat, setShowRight, handleRecieve
                   backgroundColor: message.sender === username ? '#d1f7c4' : '#f1f1f1',
                   paddingTop: '8px',
                   paddingBottom:'8px',
-                  paddingRight: message.sender === username ? '0' : '10px',
+                  paddingRight: message.sender === username ? '0' : chatList[selectedChat].isGroup? '0px':'10px',
                   borderRadius: '10px',
                   maxWidth: '70%',
                   position: 'relative',

@@ -7,7 +7,7 @@ function UserContextProvider({children}) {
       return localStorage.getItem('username') || null;
     });
     const [chatList, setChatList] = useState(()=>{
-      return JSON.parse(localStorage.getItem('myChat')) || {};
+        return JSON.parse(localStorage.getItem('myChat')) || {};
     });
     const [socketInstance, setSocketInstance] = useState(null)
   return (

@@ -17,28 +17,41 @@ const ChatUI = () => {
   
 
   const handlePendingMsg = (pendingMsg)=>{
-    let updatedChatList = chatList;
-    pendingMsg.map(finalMsg=>{
-      let {msg, receiver} = finalMsg;
-      if(!receiver){ 
-        receiver = msg.sender
-        socketInstance.emit('msg-status',{msgId:msg.id, sender:msg.sender, 'receiver':msg.receiver ,status:'delivered'});
-      };
-      if(!updatedChatList[receiver]){
-        updatedChatList[receiver]={
-          id:Date.now(),
-          name:msg.sender,
-          messages:msg==null?[]:[msg],
-          isGroup: msg==null?true:false,
+    // console.log(pendingMsg);
+    setChatList(prevChatList => {
+      const updatedChatList = { ...prevChatList };
+    
+      pendingMsg.forEach(finalMsg => {
+        let { msg, receiver, grpID } = finalMsg;
+        if (!receiver) {
+          receiver = msg.sender;
+          socketInstance.emit('msg-status', {
+            msgId: msg.id,
+            sender: msg.sender,
+            receiver: msg.receiver,
+            status: 'delivered'
+          });
         }
-      }else{
-        updatedChatList[receiver]={
-          ...updatedChatList[receiver],
-          messages:[...updatedChatList[receiver].messages,msg],
+  
+        if (!updatedChatList[receiver]) {
+        // console.log(updatedChatList,'inside set 1 with',finalMsg);
+          updatedChatList[receiver] = {
+            id: grpID? grpID :Date.now(),
+            name: msg.sender,
+            messages: msg ? [msg] : [],
+            isGroup: grpID ? true : false,
+          };
+        } else {
+        // console.log(updatedChatList,'inside set 2 with',finalMsg);
+          updatedChatList[receiver] = {
+            ...updatedChatList[receiver],
+            messages: [...updatedChatList[receiver].messages, msg],
+          };
         }
-      }
-      return;
-    })
+      });
+    
+      return updatedChatList;
+    });
   }
   
   useEffect(()=>{
@@ -77,16 +90,19 @@ const ChatUI = () => {
   },[socketInstance])
 
   const handleChatSelect = (chat) => {
+    console.log(chat,'selected chat');
+    
     setSelectedChat(chat);
-    setShowRight(true)
+    if(!chat)
+      setShowRight(true)
   };
 
   
   useEffect(()=>{
     if(!socketInstance) return
     const messageListener = (finalMsg) => {
-      const {msg, receiver} = finalMsg;
-      handleRecieveMsg(msg, receiver);
+      const {msg, receiver, grpID} = finalMsg;
+      handleRecieveMsg(msg, receiver, grpID);
       // socketInstance.emit(`msg-received-by-${username}`, 'msg Received');
     };
     const grpListener =(msg)=>{
@@ -125,6 +141,7 @@ const ChatUI = () => {
   }
 
   function handleRecieveMsg(msg, reciever = null, groupId = null){
+    // console.log(msg, reciever, groupId);
     
     if(!reciever){
       socketInstance.emit('msg-status',{msgId:msg.id, sender:msg.sender, 'receiver':msg.receiver ,status:'delivered'});
@@ -132,24 +149,26 @@ const ChatUI = () => {
     } 
     setChatList(prevChatList => {
       const updatedChatList = { ...prevChatList };
-
+      // console.log(updatedChatList,'inside set');
       if (!updatedChatList[reciever]) {
+        // console.log(updatedChatList,'inside set 1');
           updatedChatList[reciever] = {
               id: groupId ? groupId : Date.now(),
               name: reciever,
               messages: msg==null?[]:[msg],
-              isGroup: msg==null?true:false,
+              isGroup: groupId?true:false,
           };
       } else {
+        // console.log(updatedChatList,'inside set 2');
         if(!msg) return updatedChatList;
           updatedChatList[reciever] = {
               ...updatedChatList[reciever],
               messages: [...updatedChatList[reciever].messages, msg],
           };
       }
-
       return updatedChatList;
     });
+    // console.log(chatList);
   }
 
   useEffect(() => {

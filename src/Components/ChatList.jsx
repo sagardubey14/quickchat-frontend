@@ -30,6 +30,7 @@ function ChatList({chatList, handleChatSelect, setChatList, username}) {
       }
       return updatedChatList;
     })
+    setShowMenu(null)
   }
   const handleDeleteChat = (key)=>{
     handleChatSelect(null)
@@ -40,6 +41,7 @@ function ChatList({chatList, handleChatSelect, setChatList, username}) {
         delete updatedChatList[key];
         return updatedChatList;
       })
+      setShowMenu(null)
   }
   return (
     <div style={{ padding: '10px' }}>

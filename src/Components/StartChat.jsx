@@ -48,6 +48,10 @@ function StartChat({ setShowStartChat, handleChatSelect }) {
     setGroupMem([username]);
   };
 
+  const handleRemoveMem = (user)=>{
+    setGroupMem(prevGroupMem => prevGroupMem.filter(uName=> uName!== user));
+  }
+
   const selectName = (e) => {
     if (toggle) {
       if(!groupMem.includes(searchRes[e.target.dataset.key]))
@@ -76,6 +80,7 @@ function StartChat({ setShowStartChat, handleChatSelect }) {
 
 
   const createGroup = () => {
+    if(grpName === '') return;
     const grpDetail = {
       id:Date.now(),
       name: grpName,
@@ -177,7 +182,7 @@ function StartChat({ setShowStartChat, handleChatSelect }) {
                 <button
                   style={{display:`${user === username?'none':'block'}`}}
                   className="remove-user-btn"
-                  onClick={() => console.log("remove user",user)}
+                  onClick={()=>handleRemoveMem(user)}
                 >
                   <span className="remove-icon">X</span>
                 </button>
