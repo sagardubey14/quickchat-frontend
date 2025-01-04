@@ -24,7 +24,6 @@ const ChatUI = () => {
         receiver = msg.sender
         socketInstance.emit('msg-status',{msgId:msg.id, sender:msg.sender, 'receiver':msg.receiver ,status:'delivered'});
       };
-      console.log(finalMsg, "to receiver by pending");
       if(!updatedChatList[receiver]){
         updatedChatList[receiver]={
           id:Date.now(),
@@ -68,7 +67,6 @@ const ChatUI = () => {
     if(!socketInstance) return
     if(!pendingMsg){
       socketInstance.on(`pending-msg-${username}`,(msg)=>{
-        console.log(msg,'pending msg array');
         handlePendingMsg(msg)
         setPendingMsg(true);
       })
@@ -88,23 +86,19 @@ const ChatUI = () => {
     if(!socketInstance) return
     const messageListener = (finalMsg) => {
       const {msg, receiver} = finalMsg;
-      console.log(finalMsg, "to receiver");
       handleRecieveMsg(msg, receiver);
       // socketInstance.emit(`msg-received-by-${username}`, 'msg Received');
     };
     const grpListener =(msg)=>{
       if(msg.members.includes(username)){
-        console.log(msg ," grp details recieved by client!!");
         handleRecieveMsg(null,msg.name, msg.id);
       }
     }
 
     socketInstance.on('group-formation', grpListener)
     socketInstance.on(`msg-for-${username}`, messageListener);
-    console.log(`msg-status-${username}`);
     
     socketInstance.on(`msg-status-${username}`, (msg)=>{
-      console.log(msg);
       handleStatusUpdate(msg);
     })
     return () => {
@@ -116,7 +110,6 @@ const ChatUI = () => {
 
   function handleStatusUpdate(msgDetail){
     const {msgId, receiver, status} = msgDetail;
-    console.log(chatList);
     setChatList(prevChatList=>{
       let updatedChatList = {...prevChatList};
       let recieverChat = updatedChatList[receiver];
@@ -132,7 +125,6 @@ const ChatUI = () => {
   }
 
   function handleRecieveMsg(msg, reciever = null, groupId = null){
-    console.log(msg,reciever, groupId);
     
     if(!reciever){
       socketInstance.emit('msg-status',{msgId:msg.id, sender:msg.sender, 'receiver':msg.receiver ,status:'delivered'});
@@ -142,7 +134,6 @@ const ChatUI = () => {
       const updatedChatList = { ...prevChatList };
 
       if (!updatedChatList[reciever]) {
-        console.log('first');
           updatedChatList[reciever] = {
               id: groupId ? groupId : Date.now(),
               name: reciever,
@@ -150,7 +141,6 @@ const ChatUI = () => {
               isGroup: msg==null?true:false,
           };
       } else {
-        console.log('second');
         if(!msg) return updatedChatList;
           updatedChatList[reciever] = {
               ...updatedChatList[reciever],
@@ -192,7 +182,7 @@ const ChatUI = () => {
           >
             + Start Chat {username}
           </button>
-          <ChatList chatList={chatList} handleChatSelect={handleChatSelect}/>
+          <ChatList chatList={chatList} handleChatSelect={handleChatSelect} setChatList={setChatList} username={username}/>
         </div>
       
 

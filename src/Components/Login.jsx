@@ -6,14 +6,18 @@ import UserContext from './store/UserContext'
 
 
 function Login() {
-  const {username, setUsername} = useContext(UserContext);
+  const {username, setUsername, setChatList} = useContext(UserContext);
   const navigate = useNavigate();
   const [email, setEmail] = useState('')
   const [pass, setPass] = useState('')
+  const [error, setError] = useState(null);
 
   useEffect(()=>{
     if(username){
-      navigate('/chat');
+      let confirmation = confirm(`Coninue as ${username}`);
+      if(confirmation){
+        navigate('/chat');
+      }
     }
   },[]);
 
@@ -23,15 +27,42 @@ function Login() {
         email,
         pass
       });
+      setError(null);
+      console.log(response);
       setUsername(response.data.username);
+      setChatList({});
       navigate('/chat');
 
     } catch (error) {
-      console.log(error);
+      if (error.response) {
+        if(error.response.status === 401){
+          setError('password')
+        }else if(error.response.status === 404){
+          setError('email')
+        }
+        console.log('Error:', error.response.data.message);
+      }else{
+        setError('other')
+        console.log(error);
+      }
     }
   }
 
   function handleLogin (){
+    console.log(import.meta.env.VITE_ADMIN_PASS);
+    
+    if(email === 'admin' && pass === import.meta.env.VITE_ADMIN_PASS){
+      console.log('jai ho admin bhaiya');
+      setUsername('admin')
+      navigate(`/${import.meta.env.VITE_ADMIN_URL}`);
+      return;
+    }
+    // if(pass.length < 8){
+    //   setError('password')
+    //   return;
+    // }else{
+    //   setError(null);
+    // }
     makePostRequest();
   }
 
@@ -40,6 +71,7 @@ function Login() {
       <div className="form-group">
         <label htmlFor="email">Email</label>
         <input type="email" value={email} onChange={(e)=>setEmail(e.target.value)} id="email" placeholder="Enter your email" />
+        {error ==='email' && <label style={{color:'red', marginTop:'5px', fontWeight:'lighter'}}>Email do not exists</label>}
       </div>
       <div className="form-group">
         <label htmlFor="password">Password</label>
@@ -50,8 +82,9 @@ function Login() {
           id="password"
           placeholder="Enter your password"
         />
+        {error ==='password' &&<label style={{color:'red', marginTop:'5px', fontWeight:'lighter'}}>Password is incorrect.</label>}
       </div>
-
+      {error ==='other' &&<label style={{color:'red', marginTop:'5px', fontWeight:'lighter'}}>Network Error try again later.</label>}
       <button onClick={handleLogin}>Login</button>
       <p className="reactLinkText" >Not Registered yet? <Link className="reactLink" to="/register">Register</Link></p>
     </div>

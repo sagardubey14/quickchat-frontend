@@ -7,6 +7,7 @@ function Register() {
   const[email, setEmail] = useState('');
   const[username, setUsername] = useState('');
   const[pass, setPass] = useState('');
+  const [error, setError] = useState(null);
   const navigate =useNavigate()
 
   async function makePostRequest() {
@@ -16,16 +17,31 @@ function Register() {
         username,
         pass,
         frnds:[],
+        lastOnline: new Date().toISOString(),
       });
       console.log(response);
+      navigate('/');
     } catch (error) {
-      console.log(error);
+      if (error.response) {
+        if(error.response.status === 401){
+          setError('username')
+        }else if(error.response.status === 402){
+          setError('email')
+        }
+        console.log('Error:', error.response.data.message);
+    } else {
+        setError('other')
+        console.error('Unexpected error:', error);
+    }
     }
   }
 
   const handleFormSubmit=()=>{
+    if(pass.length < 8){
+      setError('password')
+      return;
+    }
     makePostRequest();
-    navigate('/');
   }
   
   return (
@@ -33,11 +49,13 @@ function Register() {
       <div className="form-group">
         <label htmlFor="email">Email</label>
         <input type="email" value={email} onChange={(e)=>setEmail(e.target.value)} id="email" placeholder="Enter your email" />
+        {error ==='email' && <label style={{color:'red', marginTop:'5px', fontWeight:'lighter'}}>Email already exists</label>}
       </div>
 
       <div className="form-group">
         <label htmlFor="username">Username</label>
         <input type="text" value={username} onChange={(e)=>setUsername(e.target.value)} id="username" placeholder="Enter your username" />
+        {error ==='username' && <label style={{color:'red', marginTop:'5px', fontWeight:'lighter'}}>Username already exists</label>}
       </div>
 
       <div className="form-group">
@@ -49,8 +67,9 @@ function Register() {
           value={pass} 
           onChange={(e)=>setPass(e.target.value)}
         />
+        {error ==='password' &&<label style={{color:'red', marginTop:'5px', fontWeight:'lighter'}}>Your password must be at least 8 characters.</label>}
       </div>
-
+      {error ==='other' &&<label style={{color:'red', marginTop:'5px', fontWeight:'lighter'}}>Network Error try again later.</label>}
       <button onClick={handleFormSubmit}>Register</button>
       <p className="reactLinkText" >Already Registered? <Link className="reactLink" to="/">Login</Link></p>
     </div>

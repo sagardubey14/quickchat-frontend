@@ -4,53 +4,60 @@ import UserContext from './store/UserContext';
 import read from '../assets/read.png'
 import delievered from '../assets/delievered.png'
 import sent from '../assets/sent.png'
+import typingImage from '../assets/typing.gif'
 
-function ChatDisplay({selectedChat, setShowRight, handleRecieveMsg, handleStatusUpdate}) {
-  const [status , setStatus] = useState(null)
+function ChatDisplay({selectedChat, setSelectedChat, setShowRight, handleRecieveMsg, handleStatusUpdate}) {
+  const [status , setStatus] = useState(null);
+  const [typing, setTyping] = useState(false);
   
   const {username, chatList , setChatList, socketInstance, setSocketInstance} = useContext(UserContext);
   const [text, setText] = useState('');
 
   useEffect(()=>{
-    console.log(socketInstance, selectedChat, chatList[selectedChat] );
-    
     if(!socketInstance) return;
     if(!selectedChat) return;
     if(chatList[selectedChat].isGroup) return;
-    console.log('checkkk');
-    socketInstance.emit('user-status',selectedChat, (st) => {
-      console.log('User status:', st.status);
-      if(st.status === 'online'){
-        setStatus('Online');
-      }else{
-        let time = getFormattedTime(st.time);
-        setStatus(`last seen at ${time}`);
-      }
-    });
+    let id;
+    const handleTypingStatus = (value)=>{
+      setTyping(value);
+      if(id) clearTimeout(id);
+      id = setTimeout(() => {
+        setTyping(false)
+      }, 1000);
+    }
+    socketInstance.on(`user-typing-at-${username}`,handleTypingStatus)
+    const userStatusId = setInterval(() => {
+      socketInstance.emit('user-status',selectedChat, (st) => {
+        if(st.status === 'online'){
+          setStatus('Online');
+        }else{
+          let time = getFormattedTime(st.time);
+          setStatus(`last seen at ${time}`);
+        }
+      });
+    }, 30000);
 
     return (()=>{
-      // clearInterval(intervalId);
+      clearInterval(userStatusId);
+      socketInstance.off(`user-typing-at-${username}`,handleTypingStatus)
       console.log('unmount');
     })
   },[socketInstance, selectedChat])
 
   function getFormattedTime(time = null) {
     const now = time?new Date(time):new Date(Date.now());
-    console.log(now);
+    // console.log(now);
     
     const hours = now.getHours();
     const minutes = now.getMinutes();
     const formattedTime = `${hours}:${minutes.toString().padStart(2, '0')}`;
     return formattedTime;
   }
+
   function sendReadStatus(msgId, status){
-    console.log(msgId,' - ', status);
-    if(status === 'sent'){
-        handleStatusUpdate({msgId, 'receiver':selectedChat, 'status':'read'})
-    }
     if(!chatList[selectedChat].isGroup){
       if(status !== 'read'){
-        console.log('read nhi he');
+        handleStatusUpdate({msgId, 'receiver':selectedChat, 'status':'read'})
         socketInstance.emit('msg-status',{msgId, sender:selectedChat, 'receiver':username ,status:'read'});
       }
     }
@@ -71,11 +78,25 @@ function ChatDisplay({selectedChat, setShowRight, handleRecieveMsg, handleStatus
       "timeStamp": getFormattedTime(),
       "status": "sent"
     }
-    console.log(msg);
     handleRecieveMsg(msg, selectedChat);
     setText("");
-    console.log(socketInstance);
-    socketInstance.emit(`chat-message`,{msg, isGroup: chatList[selectedChat].isGroup});
+    let grpDetail = {};
+    if(chatList[selectedChat].isGroup){
+      grpDetail = {
+      isGroup: true,
+      grpID:  chatList[selectedChat].id,
+      }
+    }
+    socketInstance.emit(`chat-message`,{msg, grpDetail});
+  }
+
+  const handleInputChange =(e)=>{
+    e.preventDefault();
+    setText(e.target.value)
+    if(socketInstance){
+      if(status === 'Online')
+        socketInstance.emit('chat-message',{typing:true, chat:selectedChat});
+    }
   }
 
   return (
@@ -84,7 +105,7 @@ function ChatDisplay({selectedChat, setShowRight, handleRecieveMsg, handleStatus
       selectedChat ? (
       <div style={{height:'95%'}}>
         <div style={{display:'flex'}}>
-        <button onClick={()=>setShowRight(false)} className='backButton' >{'<-'}</button>
+        <button onClick={()=>{setShowRight(false); setSelectedChat(null)}} className='backButton' >{'<-'}</button>
         <h2>{chatList[selectedChat].name}</h2>
         </div>
         {!chatList[selectedChat].isGroup && <h3>{status}</h3>}
@@ -135,11 +156,11 @@ function ChatDisplay({selectedChat, setShowRight, handleRecieveMsg, handleStatus
                     (() => {
                       switch (message.status) {
                         case 'delivered':
-                          return <img src={delievered} style={{ marginRight: '5px', height:'20px', marginLeft:'5px', color: 'blue' }}/>;
+                          return <img src={delievered} style={{ marginRight: '5px', height:'16px', marginLeft:'5px', color: 'blue' }}/>;
                         case 'read':
-                          return <img src={read} style={{ marginRight: '5px', height:'20px', marginLeft:'5px', color: 'blue' }} />;
+                          return <img src={read} style={{ marginRight: '5px', height:'18px', marginLeft:'5px', color: 'blue' }} />;
                         case 'sent':
-                          return <img src={sent} style={{ marginRight: '5px', height:'20px', marginLeft:'5px', color: 'gray' }} />;
+                          return <img src={sent} style={{ marginRight: '5px', height:'16px', marginLeft:'5px', color: 'gray' }} />;
                         default:
                           return null;
                       }
@@ -165,11 +186,14 @@ function ChatDisplay({selectedChat, setShowRight, handleRecieveMsg, handleStatus
     ) : (
       <p style={{height:'90vh'}}>Select a chat to start messaging.</p>
     )}
-     {/* Input box and Send button */}
+    {typing && <img style={{height:'30px'}} src={typingImage} />}
+     {selectedChat && 
      <div className='inputSend'>
-     <input style={{width:'100%'}} value={text} onChange={(e)=>setText(e.target.value)}/>
+     <input style={{width:'100%'}} value={text} onChange={handleInputChange}/>
      <button className='sendBtn' onClick={handleSend}>↗️</button>
      </div>
+     }
+     
      
   </div>
   

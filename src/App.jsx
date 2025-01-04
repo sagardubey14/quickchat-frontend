@@ -4,6 +4,7 @@ import Home from "./Components/Home"
 import Login from "./Components/Login"
 import Register from "./Components/Register"
 import UserContextProvider from "./Components/store/UserContextProvider"
+import Admin from "./Components/Admin"
 
 function App() {
 
@@ -15,6 +16,7 @@ function App() {
         <Route path="/register" element={<Register />} />
       </Route>
       <Route path="/chat" element={<ChatUI />} />
+      <Route path={`/${import.meta.env.VITE_ADMIN_URL}`} element={<Admin />} />
     </Routes>
     {/* <StartChat /> */}
     </UserContextProvider>

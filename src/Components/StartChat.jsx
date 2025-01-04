@@ -20,7 +20,6 @@ function StartChat({ setShowStartChat, handleChatSelect }) {
       const response = await axios.get(`${import.meta.env.VITE_API_URL}/users?username=${frndName}`);
       // 
       if(response.data.msg){
-        console.log(response.data.msg);
         setNoUsers(true);
       }else{
         setNoUsers(false);
@@ -53,7 +52,6 @@ function StartChat({ setShowStartChat, handleChatSelect }) {
     if (toggle) {
       if(!groupMem.includes(searchRes[e.target.dataset.key]))
         setGroupMem((groupMem) => [...groupMem, searchRes[e.target.dataset.key]]);
-      // console.log(groupMem);
     } else {
       let name = searchRes[e.target.dataset.key];
 
@@ -73,7 +71,6 @@ function StartChat({ setShowStartChat, handleChatSelect }) {
       }
       handleChatSelect(name)      
       setShowStartChat(false)
-      console.log(chatList);
     }
   };
 
@@ -85,8 +82,6 @@ function StartChat({ setShowStartChat, handleChatSelect }) {
       members:groupMem,
       admin:username,
     }
-    console.log("Group creating API");
-    console.log(grpDetail);
     socketInstance.emit('grp-formation',grpDetail);
     setChatList(prevChatList =>{
       return {
@@ -180,6 +175,7 @@ function StartChat({ setShowStartChat, handleChatSelect }) {
               <div key={index} className="group-member" data-key={index}>
                 <span className="member-name">{user}</span>
                 <button
+                  style={{display:`${user === username?'none':'block'}`}}
                   className="remove-user-btn"
                   onClick={() => console.log("remove user",user)}
                 >
