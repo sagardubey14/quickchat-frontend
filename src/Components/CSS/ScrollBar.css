@@ -1,7 +1,7 @@
 /* Custom Scrollbar */
 .scrollable-container {
     overflow-y: auto;
-    height: 84vh; /* Adjust according to your needs */
+    height: 90%; /* Adjust according to your needs */
   }
   
   /* Style the scrollbar track (background of the scrollbar) */

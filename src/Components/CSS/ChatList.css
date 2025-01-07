@@ -29,7 +29,7 @@
     background-color: #e4e4e4;
     border-radius: 5px;
     width: 200px;
-    margin-left: 10px;
+    /* margin-left: 10px; */
     z-index: 10;
   }
   
@@ -60,7 +60,8 @@
 
 @media (max-width: 767px) {
     .chat-item__options{
-        left: 47%;
         top: 0%;
+        left: auto;
+        right: 0%;
     }
 }

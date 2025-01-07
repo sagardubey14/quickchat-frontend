@@ -54,7 +54,7 @@ function ChatList({chatList, handleChatSelect, setChatList, username}) {
                 key={chatKey}
                 className="chat-item"
               >
-                <span onClick={() => handleChatSelect(chatKey)} >{chatKey}</span> {chat.isGroup ? null : showStar ? <img style={{height:'10px'}} src={unread} /> : null}
+                <span onClick={() => handleChatSelect(chatKey)} >{chatKey}</span> {showStar ? <img style={{height:'10px'}} src={unread} /> : null}
                 <img onClick={()=>setShowMenu(chatKey)} style={{height:'20px', marginLeft:'auto'}} src={menu} />
                 {showMenu === chatKey && (
                 <div

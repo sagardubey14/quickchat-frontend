@@ -34,13 +34,6 @@ function StartChat({ setShowStartChat, handleChatSelect }) {
     makeGetRequest();
 
   },[debouncedName])
-  
-  
-
-  const handleFrndChange = (e)=>{
-    const updatedName = e.target.value;
-    setFrndName(updatedName);
-  }
 
   const onToggle = (e) => {
     setToggle((prev) => !prev);
@@ -152,7 +145,7 @@ function StartChat({ setShowStartChat, handleChatSelect }) {
           type="text"
           id="friendName"
           value={frndName}
-          onChange={(e)=>{setFrndName(e.target.value)}}
+          onChange={(e)=>{setFrndName(e.target.value.toLowerCase())}}
           className="friend-input"
           placeholder="Friend's Name"
         />

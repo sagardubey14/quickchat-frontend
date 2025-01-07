@@ -128,7 +128,7 @@ function ChatDisplay({selectedChat, setSelectedChat, setShowRight, handleRecieve
   }
 
   return (
-    <div style={{ flex: 1, backgroundColor: '#fff', padding: '20px', flexDirection:'column'  }}>
+    <div style={{ height:'100vh', flex: 1, backgroundColor: '#fff', padding: '20px', flexDirection:'column'  }}>
     {
       selectedChat ? (
       <div style={{height:'95%'}}>

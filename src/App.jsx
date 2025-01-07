@@ -5,8 +5,19 @@ import Login from "./Components/Login"
 import Register from "./Components/Register"
 import UserContextProvider from "./Components/store/UserContextProvider"
 import Admin from "./Components/Admin"
+import { useEffect } from "react"
+import axios from "axios"
 
 function App() {
+
+  useEffect( async ()=>{
+    try {
+      let res = await axios.get(`${import.meta.env.VITE_API_URL}`)
+      console.log(res);
+    } catch (error) {
+      console.log(error);
+    }
+  },[])
 
   return (
     <UserContextProvider>

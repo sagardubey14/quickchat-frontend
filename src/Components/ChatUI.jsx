@@ -58,6 +58,7 @@ const ChatUI = () => {
     if(username === null){
       navigate('/')
     }else{
+      window.scrollTo(0, 0);
       if(!socketInstance){
         const socketInst = io.connect(`${import.meta.env.VITE_API_URL}`,{
           query:{
@@ -93,7 +94,7 @@ const ChatUI = () => {
     console.log(chat,'selected chat');
     
     setSelectedChat(chat);
-    if(!chat)
+    if(chat)
       setShowRight(true)
   };
 

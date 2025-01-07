@@ -1,6 +1,5 @@
 import {useState} from 'react'
 import UserContext from './userContext'
-import chat from './basicData';
 
 function UserContextProvider({children}) {
     const [username, setUsername] = useState(()=>{

@@ -11,6 +11,7 @@ function Login() {
   const [email, setEmail] = useState('')
   const [pass, setPass] = useState('')
   const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(()=>{
     if(username){
@@ -22,6 +23,7 @@ function Login() {
   },[]);
 
   async function makePostRequest() {
+    setLoading(true)
     try {
       const response = await axios.post(`${import.meta.env.VITE_API_URL}/login`, {
         email,
@@ -45,13 +47,15 @@ function Login() {
         setError('other')
         console.log(error);
       }
+    } finally{
+      setLoading(false);
     }
   }
 
   function handleLogin (){
-    console.log(import.meta.env.VITE_ADMIN_PASS);
-    
+    if(loading) return;
     if(email === 'admin' && pass === import.meta.env.VITE_ADMIN_PASS){
+      console.log(import.meta.env.VITE_API_URL);
       console.log('jai ho admin bhaiya');
       setUsername('admin')
       navigate(`/${import.meta.env.VITE_ADMIN_URL}`);
@@ -85,7 +89,7 @@ function Login() {
         {error ==='password' &&<label style={{color:'red', marginTop:'5px', fontWeight:'lighter'}}>Password is incorrect.</label>}
       </div>
       {error ==='other' &&<label style={{color:'red', marginTop:'5px', fontWeight:'lighter'}}>Network Error try again later.</label>}
-      <button onClick={handleLogin}>Login</button>
+      <button onClick={handleLogin}>{loading ? 'loading...': 'Login'}</button>
       <p className="reactLinkText" >Not Registered yet? <Link className="reactLink" to="/register">Register</Link></p>
     </div>
   )
